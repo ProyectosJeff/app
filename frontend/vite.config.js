@@ -3,6 +3,7 @@ import react from "@vitejs/plugin-react";
 
 export default defineConfig({
   plugins: [react()],
-  define: { "process.env": {} },
-  build: { sourcemap: true, target: "es2018" },
+  build: {
+    sourcemap: true, // <-- para que el stack trace apunte a tus archivos
+  },
 });
