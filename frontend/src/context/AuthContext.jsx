@@ -1,8 +1,8 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
 
-/* =======================
-   Helper: decodifica JWT (sin libs)
-   ======================= */
+const API_BASE = (import.meta.env?.VITE_API_URL || "http://localhost:4000").replace(/\/$/, "");
+const AuthCtx = createContext(null);
+
 // --- Helper sin dependencias para leer el payload del JWT ---
 function parseJwtPayload(token) {
   if (!token || typeof token !== "string") return null;
@@ -17,119 +17,89 @@ function parseJwtPayload(token) {
     // decodificar
     const bin = atob(padded);
     const json = decodeURIComponent(
-      bin
-        .split("")
-        .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
-        .join("")
+      bin.split("").map(c => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2)).join("")
     );
     return JSON.parse(json);
   } catch {
-    return null; // si está corrupto, no crashea la app
+    return null; // si está corrupto, no rompe la app
   }
 }
 
-/* =======================
-   Config API
-   ======================= */
-const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:4000";
-export const BASE = API_BASE.replace(/\/$/, "");
-
-/* =======================
-   Contexto de Autenticación
-   ======================= */
-const AuthContext = createContext(null);
-
 export function AuthProvider({ children }) {
-  // token
-  const [token, setToken] = useState(() => localStorage.getItem("token") || "");
-
-  // usuario: primero intenta de localStorage, luego del JWT (si hay)
-  const [user, setUser] = useState(() => {
-    const raw = localStorage.getItem("user");
-    if (raw) {
-      try {
-        return JSON.parse(raw);
-      } catch {
-        /* ignore */
-      }
-    }
-    const payload = parseJwtPayload(localStorage.getItem("token") || "");
-    // adapta a lo que devuelve tu backend:
-    // si metes el user completo en el token, úsalo;
-    // si solo trae username/role, construimos un objeto simple.
-    if (payload?.user) return payload.user;
-    if (payload?.username || payload?.role) {
-      return { username: payload.username || "", role: payload.role || "" };
-    }
-    return null;
+  const [token, setToken] = useState(() => {
+    try { return localStorage.getItem("token") || ""; } catch { return ""; }
   });
 
-  // sincroniza al cambiar token
-  useEffect(() => {
-    if (!token) {
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
-      setUser(null);
-      return;
-    }
-    localStorage.setItem("token", token);
+  const [user, setUser] = useState(() => {
+    try { return JSON.parse(localStorage.getItem("user") || "null"); }
+    catch { return null; }
+  });
 
-    // si no hay user en memoria, intenta del token
-    if (!user) {
-      const payload = parseJwtPayload(token);
-      let u = null;
-      if (payload?.user) u = payload.user;
-      else if (payload?.username || payload?.role) {
-        u = { username: payload.username || "", role: payload.role || "" };
-      }
-      if (u) {
-        setUser(u);
-        localStorage.setItem("user", JSON.stringify(u));
-      }
-    }
+  // Persistencia segura
+  useEffect(() => {
+    try {
+      if (token) localStorage.setItem("token", token);
+      else localStorage.removeItem("token");
+    } catch {}
   }, [token]);
 
-  // API pública del contexto
-  const login = (jwt, userObj) => {
-    // guarda token
-    setToken(jwt);
+  useEffect(() => {
+    try {
+      if (user) localStorage.setItem("user", JSON.stringify(user));
+      else localStorage.removeItem("user");
+    } catch {}
+  }, [user]);
 
-    // preferimos el user del backend si viene; si no, del token
-    let u = userObj;
-    if (!u) {
-      const p = parseJwtPayload(jwt);
-      if (p?.user) u = p.user;
-      else if (p?.username || p?.role) {
-        u = { username: p.username || "", role: p.role || "" };
-      }
+  // Si hay token sin usuario, intenta llenarlo desde el payload
+  useEffect(() => {
+    if (token && !user) {
+      const p = parseJwtPayload(token);
+      if (p?.username) setUser({ username: p.username, role: p.role });
     }
-    if (!u) u = null;
+  }, [token, user]);
 
-    setUser(u);
-    if (u) localStorage.setItem("user", JSON.stringify(u));
-    else localStorage.removeItem("user");
-  };
+  const value = useMemo(() => ({
+    token,
+    user,
+    apiBase: API_BASE,
 
-  const logout = () => {
-    setToken("");
-    setUser(null);
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-  };
+    login: async (username, password) => {
+      // No lanzar excepción no manejada; devolver Error claro si falla
+      const r = await fetch(`${API_BASE}/api/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password })
+      });
+      if (!r.ok) {
+        let msg = `Error HTTP ${r.status}`;
+        try { const j = await r.json(); if (j?.error) msg = j.error; } catch {}
+        throw new Error(msg);
+      }
+      const data = await r.json().catch(() => ({}));
+      const t = data.token || "";
+      setToken(t);
 
-  const value = useMemo(
-    () => ({ token, user, login, logout, BASE }),
-    [token, user]
-  );
+      let u = null;
+      const p = parseJwtPayload(t);
+      if (p?.username) u = { username: p.username, role: p.role };
+      else if (data.user) u = data.user;
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+      setUser(u);
+      return u;
+    },
+
+    logout: () => {
+      setToken("");
+      setUser(null);
+    }
+  }), [token, user]);
+
+  return <AuthCtx.Provider value={value}>{children}</AuthCtx.Provider>;
 }
 
-export function useAuth() {
-  const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error("useAuth must be used within <AuthProvider>");
-  return ctx;
-}
+export const useAuth = () => useContext(AuthCtx);
+
+
 
 
 
