@@ -1,0 +1,602 @@
+/* ===== tokens / base (igual que antes, abreviado) ===== */
+:root{
+  --border-1:#e5e7eb; --smoke-0:#f6f8ff;
+  --ink:#eef2ff; --brand-500:#2563eb; --brand-600:#1e40af;
+}
+*{box-sizing:border-box} html,body,#root{height:100%}
+body{margin:0;color:var(--ink);font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial;background:linear-gradient(160deg,#0a0f6b 0%,#06113e 100%)}
+
+/* ===== TOPBAR (links blancos) ===== */
+header.topbar{background:linear-gradient(180deg,#2450c2,#1739a1);color:#fff;box-shadow:0 2px 12px rgba(0,0,0,.25)}
+header.topbar a,header.topbar a:visited{color:#fff!important;text-decoration:none!important}
+header.topbar .toplink.is-active{border-bottom:2px solid rgba(255,255,255,.85);padding-bottom:2px}
+
+/* ===== BOTONES ===== */
+.btn{display:inline-flex;align-items:center;gap:8px;height:36px;padding:0 14px;border-radius:10px;border:1px solid rgba(0,0,0,.1);background:#fff;color:#0f172a;cursor:pointer}
+.btn-sm{height:30px;padding:0 10px}.btn-primary{color:#fff;background:linear-gradient(145deg,#2563eb,#1e40af);border-color:#1e40af}
+.btn-secondary{background:linear-gradient(145deg,#f8fafc,#eef2f7);border-color:#e2e8f0}
+.btn-success{color:#fff;background:linear-gradient(145deg,#16a34a,#15803d);border-color:#15803d}
+
+/* ===== INVENTARIO: contenedores ===== */
+.container{width:min(1200px,92vw);margin-inline:auto}
+.inventory-page{padding:18px 0 40px}
+.inv-card{width:min(1250px,94vw);margin:10px auto 24px;background:#fff;color:#0f172a;border:1px solid #e7e9f1;border-radius:16px;box-shadow:0 10px 32px rgba(0,0,0,.1);overflow:hidden}
+
+/* Toolbar */
+.inv-toolbar{display:grid;grid-template-columns:1fr auto auto auto;gap:10px;align-items:center;padding:14px;border-bottom:1px solid var(--border-1);background:#f8fafc}
+.inv-search{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:8px 10px;max-width:420px;min-width:220px}
+.inv-search input{border:0;outline:0;min-width:0;flex:1;font-size:14px;background:transparent;color:#0f172a}
+@media (max-width:640px){.inv-toolbar{grid-template-columns:1fr}.inv-search{max-width:100%}.inv-toolbar .btn{width:100%}}
+
+/* ===== TABLA: tamaños compactos y sin solapes ===== */
+.inv-table{width:100%;border-collapse:collapse;table-layout:fixed}
+.inv-table th,.inv-table td{
+  border:1px solid var(--border-1);padding:6px 8px;font-size:12.5px;line-height:1.25;
+  vertical-align:middle;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background:#fff
+}
+.inv-table thead th{position:sticky;top:0;z-index:1;background:#f5f7ff;color:#334155;font-weight:700}
+.inv-table td.text-right{ text-align:right; font-variant-numeric:tabular-nums }
+.inv-table td.col-code{font-weight:600;max-width:16ch}
+.inv-table td.col-code .clip{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.inv-table td.col-desc{white-space:normal;word-break:break-word;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;max-height:2.5em}
+
+/* Anchos (con Alias/Almacén) */
+.inv-table.inv-has-alias th:nth-child(1),.inv-table.inv-has-alias td:nth-child(1){width:15ch}
+.inv-table.inv-has-alias th:nth-child(2),.inv-table.inv-has-alias td:nth-child(2){width:32%}
+.inv-table.inv-has-alias th:nth-child(3),.inv-table.inv-has-alias td:nth-child(3){width:12ch}
+.inv-table.inv-has-alias th:nth-child(4),.inv-table.inv-has-alias td:nth-child(4){width:12ch}
+.inv-table.inv-has-alias th:nth-child(5),.inv-table.inv-has-alias td:nth-child(5){width:7ch}
+.inv-table.inv-has-alias th:nth-child(6),.inv-table.inv-has-alias td:nth-child(6),
+.inv-table.inv-has-alias th:nth-child(7),.inv-table.inv-has-alias td:nth-child(7),
+.inv-table.inv-has-alias th:nth-child(8),.inv-table.inv-has-alias td:nth-child(8){width:10ch;text-align:right}
+.inv-table.inv-has-alias th:nth-child(9),.inv-table.inv-has-alias td:nth-child(9){width:11ch}
+.inv-table.inv-has-alias th:nth-child(10),.inv-table.inv-has-alias td:nth-child(10){width:12ch}
+.inv-table.inv-has-alias th:nth-child(11),.inv-table.inv-has-alias td:nth-child(11){width:12ch}
+.inv-table.inv-has-alias th:nth-child(12),.inv-table.inv-has-alias td:nth-child(12){width:8ch}
+.inv-table.inv-has-alias th:nth-child(13),.inv-table.inv-has-alias td:nth-child(13){width:9ch}
+
+/* Zebra + hover */
+.inv-table tbody tr:nth-child(even) td{background:#fafbff}
+.inv-table tbody tr:hover td{background:#f0f4ff}
+
+/* Paginación — chevrons visibles */
+.table-nav{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 14px;background:#f8fafc;border-top:1px solid #e5e7eb;flex-wrap:wrap}
+.page-size{display:flex;align-items:center;gap:6px;font-size:13px;color:#475569}
+.page-size select{height:32px;border-radius:8px;border:1px solid #e2e8f0;background:#fff;color:#0f172a;padding:0 8px}
+
+.pager{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.page-btn{
+  min-width:34px;height:32px;padding:0 8px;border-radius:8px;border:1px solid #e2e8f0;background:#fff;
+  color:#0f172a;display:inline-flex;align-items:center;justify-content:center;cursor:pointer
+}
+.page-btn .icon svg{width:18px;height:18px;display:block}
+.page-btn:hover{background:#eef2f7}
+.page-btn[disabled]{opacity:.55;background:#f1f5f9}
+.page-btn--active{border-color:#1e40af;background:linear-gradient(145deg,#2563eb,#1e40af);color:#fff}
+
+/* Botón editar más compacto */
+.inv-table .cell-actions .btn{height:30px;padding:0 10px;font-size:12px}
+
+/* ===== Badges ===== */
+.badge{display:inline-block;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:600;white-space:nowrap}
+.badge--conciliado{color:#065f46;background:#d1fae5;border:1px solid #a7f3d0}
+.badge--pendiente{color:#7c2d12;background:#ffedd5;border:1px solid #fed7aa}
+.badge--faltante{color:#7f1d1d;background:#fee2e2;border:1px solid #fecaca}
+.badge--sobrante{color:#1e3a8a;background:#dbeafe;border:1px solid #bfdbfe}
+
+/* ===== Cards móviles ===== */
+@media (min-width:641px){.inv-cards{display:none}}
+@media (max-width:640px){
+  .inv-card{padding:10px;border-radius:16px}
+  .inv-table{display:none}
+  .inv-cards{display:grid;gap:12px}
+  .inv-cardItem{background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:14px;box-shadow:0 4px 18px rgba(15,23,42,.06)}
+  .inv-cardHead{display:grid;grid-template-columns:1fr auto;gap:8px;margin-bottom:8px}
+  .inv-title{font-weight:700;color:#0f172a}
+  .inv-sub{font-size:12px;color:#64748b;margin-top:2px}
+  .kv{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-top:1px dashed #e5e7eb;font-size:14px}
+  .kv:first-of-type{border-top:0}
+  .card-actions{display:flex;gap:8px;margin-top:10px}
+  .card-actions .btn{flex:1 1 auto}
+}
+
+/* ===== Footer ===== */
+.site-footer{margin:16px 0 8px;text-align:center;font-size:12px;color:#cbd5e1}
+/* ====== INVENTARIO: encaje de celdas y responsive ====== */
+
+/* La tabla no se deforma y respeta los anchos */
+.inv-table{
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;              /* 👈 importante */
+}
+.inv-table th,
+.inv-table td{
+  border: 1px solid #e5e7eb;
+  padding: 8px 10px;
+  font-size: 13px;
+  line-height: 1.25;
+  vertical-align: middle;
+  background: #fff;
+  white-space: nowrap;               /* 1 línea por defecto */
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.inv-table thead th{
+  position: sticky; top: 0; z-index: 1;
+  background: #f5f7ff;
+  color: #334155;
+  font-weight: 700;
+}
+
+/* Código: 1 línea + elipsis */
+.inv-table td.col-code{ max-width: 16ch; }
+.inv-table td.col-code .clip{ display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+/* Descripción: hasta 2 líneas (clamp) */
+.inv-table td.col-desc .clip2{
+  display:-webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  white-space: normal;
+  overflow: hidden;
+}
+
+/* Alineación derecha para cantidades */
+.inv-table td.text-right{ text-align: right; }
+
+/* Anchos por columna (ajústalos si deseas) */
+.inv-table th:nth-child(1),  .inv-table td:nth-child(1)  { width: 16ch; } /* Cod. */
+.inv-table th:nth-child(2),  .inv-table td:nth-child(2)  { width: 32%;  } /* Descripción */
+.inv-table th:nth-child(3),  .inv-table td:nth-child(3)  { width: 12ch; } /* Alias */
+.inv-table th:nth-child(4),  .inv-table td:nth-child(4)  { width: 12ch; } /* Almacén */
+.inv-table th:nth-child(5),  .inv-table td:nth-child(5)  { width: 7ch;  } /* U.M. */
+.inv-table th:nth-child(6),  .inv-table td:nth-child(6),
+.inv-table th:nth-child(7),  .inv-table td:nth-child(7),
+.inv-table th:nth-child(8),  .inv-table td:nth-child(8)  { width: 10ch; text-align:right; } /* Stock/Conteo/Diff */
+.inv-table th:nth-child(9),  .inv-table td:nth-child(9)  { width: 11ch; } /* Estatus */
+.inv-table th:nth-child(10), .inv-table td:nth-child(10) { width: 12ch; } /* Usuario */
+.inv-table th:nth-child(11), .inv-table td:nth-child(11) { width: 12ch; } /* Fecha */
+.inv-table th:nth-child(12), .inv-table td:nth-child(12) { width: 8ch;  } /* Hora */
+.inv-table th:nth-child(13), .inv-table td:nth-child(13) { width: 9ch;  } /* Acción */
+
+/* Contenedor con scroll horizontal para pantallas medianas */
+.table-wrap{
+  width: 100%;
+  overflow-x: auto;                 /* 👈 permite deslizar */
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Tabla un poco más compacta en pantallas <1200px */
+@media (max-width: 1200px){
+  .inv-table{ min-width: 980px; }   /* evita que se “apriete” */
+  .inv-table th, .inv-table td{ font-size: 12px; padding: 6px 8px; }
+}
+
+/* Aún más compacto <1024px */
+@media (max-width: 1024px){
+  .inv-table th, .inv-table td{ font-size: 11.5px; padding: 6px 6px; }
+}
+
+/* Toolbar a una columna en tablets/móvil */
+@media (max-width: 900px){
+  .inv-toolbar{ grid-template-columns: 1fr; }
+  .inv-search{ max-width: 100%; width: 100%; }
+  .inv-toolbar .btn{ width: 100%; }
+}
+
+/* 🔁 Modo cards hasta 900px (table se oculta y se ve la versión móvil) */
+@media (min-width: 901px){
+  .inv-cards { display: none; }
+}
+@media (max-width: 900px){
+  .inv-card{ padding: 10px; border-radius: 16px; }
+  .table-wrap, .inv-table{ display: none; }
+  .inv-cards{ display: grid; gap: 12px; }
+}
+
+/* Paginación visible y clara */
+.pager{ display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
+.page-btn{
+  min-width:34px; height:32px; padding:0 8px;
+  border-radius:8px; border:1px solid #e2e8f0; background:#fff; color:#0f172a;
+  display:inline-flex; align-items:center; justify-content:center; cursor:pointer;
+}
+.page-btn:hover{ background:#eef2f7; }
+.page-btn[disabled]{ opacity:.5; cursor:not-allowed; }
+.page-btn--active{
+  border-color:#1e40af; background:linear-gradient(145deg,#2563eb,#1e40af); color:#fff;
+}
+/* ===== Scroll horizontal para ver todas las columnas ===== */
+.table-scroll-x{
+  overflow: auto;
+  width: 100%;
+}
+
+/* Mantener layout estable y permitir width por TH (table-layout: fixed ya lo tienes) */
+.inv-table{
+  table-layout: fixed;
+  width: 100%;
+}
+.inv-table th, .inv-table td{
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+}
+
+/* Columna código y descripción con clases existentes (se mantienen) */
+.inv-table td.col-code{ font-weight: 600; }
+.inv-table td.col-desc{ white-space: normal; overflow: hidden; }
+
+/* ===== Resizer visual en el borde derecho del TH ===== */
+.inv-table thead th{
+  position: relative;
+  user-select: none;
+  cursor: grab;                  /* para reordenar */
+}
+.inv-table thead th.is-resizing{ cursor: col-resize; }
+
+.th-resizer{
+  position: absolute;
+  top: 0; right: -3px;
+  width: 6px; height: 100%;
+  cursor: col-resize;
+  z-index: 2;
+}
+.th-resizer::after{
+  content:"";
+  position:absolute; inset:0;
+  border-right:2px solid transparent;
+  transition: border-color .12s ease;
+}
+.inv-table thead th:hover .th-resizer::after{
+  border-right-color: rgba(30,64,175,.35);
+}
+
+/* Drag & Drop feedback */
+.inv-table thead th.th-dragging{
+  opacity:.6;
+}
+
+/* Paginación: que se vean bien los botones */
+.pager .page-btn{
+  min-width: 34px; height: 32px;
+  border-radius: 8px;
+  border:1px solid #e2e8f0;
+  background:#fff; color:#0f172a;
+}
+.pager .page-btn--active{
+  border-color:#1e40af;
+  background:linear-gradient(145deg,#2563eb,#1e40af);
+  color:#fff;
+}
+
+/* En móvil, seguimos usando cards; no tocamos esa vista */
+@media (max-width: 640px){
+  .inv-table{ display:none; }
+}
+/* ===== Scroll horizontal y comportamiento base ===== */
+.table-scroll-x{ overflow: auto; width: 100%; }
+
+.inv-table{ table-layout: fixed; width: 100%; border-collapse: collapse; }
+.inv-table th, .inv-table td{
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+}
+
+/* ✅ Descripción SIN clamp ni caja rara (sobrescribe reglas antiguas) */
+.inv-table td.col-desc{
+  display: table-cell !important;              /* vuelve al comportamiento de celda */
+  -webkit-line-clamp: unset !important;
+  -webkit-box-orient: unset !important;
+  white-space: normal !important;              /* permite varias líneas */
+  word-break: break-word;                      /* parte palabras largas */
+}
+
+/* Código sigue en una línea */
+.inv-table td.col-code{ font-weight:600; }
+
+/* ===== Resizer/drag en cabecera ===== */
+.inv-table thead th{ position: relative; user-select: none; cursor: grab; }
+.inv-table thead th.is-resizing{ cursor: col-resize; }
+
+.th-resizer{
+  position:absolute; top:0; right:-3px; width:6px; height:100%;
+  cursor: col-resize; z-index:2;
+}
+.th-resizer::after{
+  content:""; position:absolute; inset:0;
+  border-right:2px solid transparent; transition: border-color .12s ease;
+}
+.inv-table thead th:hover .th-resizer::after{ border-right-color: rgba(30,64,175,.35); }
+.inv-table thead th.th-dragging{ opacity:.6; }
+
+/* Paginación visible */
+.pager .page-btn{
+  min-width:34px; height:32px; border-radius:8px;
+  border:1px solid #e2e8f0; background:#fff; color:#0f172a;
+}
+.pager .page-btn--active{
+  border-color:#1e40af;
+  background:linear-gradient(145deg,#2563eb,#1e40af);
+  color:#fff;
+}
+
+/* En móvil seguimos usando cards */
+@media (max-width: 640px){
+  .inv-table{ display:none; }
+}
+/* ===== Scroll horizontal y comportamiento base ===== */
+.table-scroll-x{ overflow: auto; width: 100%; }
+
+.inv-table{ table-layout: fixed; width: 100%; border-collapse: collapse; }
+.inv-table th, .inv-table td{
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+}
+
+/* ✅ Descripción SIN clamp ni caja rara */
+.inv-table td.col-desc{
+  display: table-cell !important;
+  -webkit-line-clamp: unset !important;
+  -webkit-box-orient: unset !important;
+  white-space: normal !important;
+  word-break: break-word;
+}
+
+/* Código sigue en una línea */
+.inv-table td.col-code{ font-weight:600; }
+
+/* ===== Resizer/drag en cabecera ===== */
+.inv-table thead th{ position: relative; user-select: none; cursor: grab; }
+.inv-table thead th.is-resizing{ cursor: col-resize; }
+
+.th-resizer{
+  position:absolute; top:0; right:-3px; width:6px; height:100%;
+  cursor: col-resize; z-index:2;
+}
+.th-resizer::after{
+  content:""; position:absolute; inset:0;
+  border-right:2px solid transparent; transition: border-color .12s ease;
+}
+.inv-table thead th:hover .th-resizer::after{ border-right-color: rgba(30,64,175,.35); }
+.inv-table thead th.th-dragging{ opacity:.6; }
+
+/* Paginación visible */
+.pager .page-btn{
+  min-width:34px; height:32px; border-radius:8px;
+  border:1px solid #e2e8f0; background:#fff; color:#0f172a;
+}
+.pager .page-btn--active{
+  border-color:#1e40af;
+  background:linear-gradient(145deg,#2563eb,#1e40af);
+  color:#fff;
+}
+
+/* ===== Badges (tabla) ===== */
+.badge{
+  display:inline-block; padding: 4px 10px; border-radius: 999px;
+  font-size: 12px; font-weight: 600; letter-spacing: .2px;
+}
+.badge--conciliado{ color:#065f46; background:#d1fae5; border:1px solid #a7f3d0; }
+.badge--pendiente{ color:#7c2d12; background:#ffedd5; border:1px solid #fed7aa; }
+.badge--faltante{  color:#7f1d1d; background:#fee2e2; border:1px solid #fecaca; }
+.badge--sobrante{  color:#1e3a8a; background:#dbeafe; border:1px solid #bfdbfe; }
+
+/* ===== Cards móvil ===== */
+@media (max-width: 640px){
+  .inv-table{ display:none; }
+  .inv-cards{ display:grid; gap:12px; }
+
+  .inv-cardItem{
+    background:#ffffff;
+    border:1px solid #e5e7eb;
+    border-radius:14px;
+    padding:14px;
+    box-shadow:0 4px 18px rgba(15,23,42,.06);
+  }
+  .inv-cardHead{
+    display:grid;
+    grid-template-columns: 1fr auto;
+    align-items:center;
+    gap:8px;
+    margin-bottom:8px;
+  }
+  .inv-title{ font-weight:700; color:#0f172a; line-height:1.2; }
+  .inv-sub{ font-size:12px; color:#64748b; margin-top:2px; }
+
+  .kv{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:8px 0; border-top:1px dashed #e5e7eb; font-size:14px;
+  }
+  .kv:first-of-type{ border-top:0; }
+  .kv .label{ color:#64748b; }
+  .kv .value{ font-variant-numeric: tabular-nums; }
+
+  .card-actions{ display:flex; gap:8px; margin-top:10px; }
+  .card-actions .btn{ flex:1 1 auto; }
+
+  /* 👇 Badge en móvil: menos redondo (más profesional) */
+  .inv-cardItem .badge{
+    border-radius:10px;   /* en lugar de 999px */
+    padding: 4px 8px;
+  }
+}
+/* ===========================================
+   LOGIN — Neumorphism (restaurado)
+   =========================================== */
+.login-page .login-wrap{
+  min-height: 100vh; display: grid; place-items: center; padding: 28px;
+  color: #eef2ff;
+}
+.login-page .login-card{
+  width: 400px; border-radius: 28px; padding: 24px;
+  color: #eef2ff !important;
+  background: linear-gradient(145deg, #121a4d, #0f1540) !important;
+  border: 1px solid rgba(255,255,255,.12) !important;
+  box-shadow:
+    -26px -26px 60px rgba(70,95,255,.16),
+     26px  26px 60px rgba(0,0,0,.60),
+     0 0 0 1px rgba(0,0,0,.35) inset !important;
+  backdrop-filter: blur(12px) saturate(120%);
+}
+.login-page .brand-row{ display:flex; align-items:center; gap:12px; margin-bottom:10px; }
+.login-page .brand-mark{
+  width: 42px; height: 42px; border-radius: 11px; flex: 0 0 auto;
+  background: linear-gradient(145deg, #2563eb, #1e40af);
+  box-shadow: 0 10px 22px rgba(37,99,235,.35), 0 2px 6px rgba(0,0,0,.25);
+  display:grid; place-items:center; color:#fff; font-weight:700; letter-spacing:.4px;
+}
+.login-page .brand-title{ margin:0; font-size:18px; font-weight:700; }
+.login-page .brand-sub{ margin:0; color:#c7d2fe; font-size:13px; }
+.login-page .login-label{ display:block; margin:12px 0 6px; font-size:13px; color:#dbe4ff; }
+.login-page .login-input{
+  width: 100%; padding: 12px 14px; border-radius: 10px;
+  border: 1px solid #e2e8f0; background: #ffffff !important; color: #0f172a !important;
+  outline: none; box-shadow: none !important;
+}
+.login-page .login-input::placeholder{ color:#94a3b8; }
+.login-page .login-input:focus{
+  border-color: #3b82f6; box-shadow: 0 0 0 2px rgba(59,130,246,.15);
+}
+.login-page .login-btn{
+  margin-top:16px; width:100%; padding:12px 14px; border-radius:16px;
+  border:1px solid #1e40af !important; color:#fff;
+  background: linear-gradient(145deg, #2563eb, #1e40af) !important;
+  box-shadow: 0 10px 22px rgba(37,99,235,.35), 0 2px 6px rgba(0,0,0,.25);
+  transition: transform .06s ease, filter .15s ease;
+}
+.login-page .login-btn:hover{ transform: translateY(-1px); filter: brightness(1.02); }
+.login-page .login-btn:active{ transform: translateY(0); }
+.login-page .login-error{ color:#fecaca; margin-top:10px; font-size:13px; }
+@media (max-width: 420px){
+  .login-page .login-card{ width: 92vw; padding: 20px; }
+}
+
+/* ===========================================
+   MODAL — ventana emergente “clásica”
+   (no cambia tu lógica, sólo el look)
+   =========================================== */
+.modal-backdrop{
+  position: fixed; inset:0; background: rgba(2,6,23,.55);
+  display:flex; align-items:center; justify-content:center; z-index: 50;
+  backdrop-filter: blur(2px);
+}
+.modal-card{
+  width: min(680px, 92vw);
+  background: #ffffff; color:#0f172a;
+  border-radius: 16px; border: 1px solid #e7e9f1;
+  box-shadow: 0 20px 60px rgba(0,0,0,.35);
+  overflow: hidden;
+}
+.modal-head{
+  display:flex; align-items:center; justify-content: space-between;
+  padding: 14px 16px; border-bottom: 1px solid #e5e7eb; background:#f8fafc;
+}
+.modal-body{ padding: 16px; }
+.modal-actions{
+  display:flex; gap:10px; justify-content: flex-end;
+  padding: 12px 16px; border-top:1px solid #e5e7eb; background:#f8fafc;
+}
+
+/* ===========================================
+   DASHBOARD — restaurado, responsive
+   =========================================== */
+.kpi-row{
+  display:flex; flex-wrap:wrap; gap:12px; align-items:stretch; justify-content:flex-start;
+  margin: 8px 0 12px;
+}
+.kpi{
+  width: 140px; min-height: 64px; padding: 10px 12px; border-radius: 12px; color:#fff;
+  display:flex; flex-direction:column; justify-content:center; gap:4px;
+  box-shadow: 0 6px 14px rgba(0,0,0,.16), inset 0 0 0 1px rgba(255,255,255,.06);
+}
+.kpi-title{ font-size: 11px; letter-spacing: .2px; opacity: .95; white-space: nowrap; }
+.kpi-value{ font-size: 20px; font-weight: 800; line-height: 1; }
+.kpi--total{ background: linear-gradient(145deg, #0b1a30, #0a1225); }
+.kpi--pend{  background: linear-gradient(145deg, #8a5c00, #6b4700); }
+.kpi--conc{  background: linear-gradient(145deg, #0f6e59, #0c5345); }
+.kpi--falt{  background: linear-gradient(145deg, #a11616, #7d0f0f); }
+.kpi--sobra{ background: linear-gradient(145deg, #362a72, #2a225f); }
+@media (min-width: 1024px){ .kpi{ width:160px; min-height:64px; } }
+@media (max-width: 640px){ .kpi{ width: calc(50% - 6px); } }
+@media (max-width: 380px){ .kpi{ width: 100%; } }
+
+.dash-charts{ display: grid; grid-template-columns: 1fr; gap: 16px; align-items: start; }
+.chart-box--wide{
+  background: #f6f8ff; color: #0f172a; border: 1px solid #e5e7eb; border-radius: 14px;
+  box-shadow: 0 10px 24px rgba(0,0,0,.12); padding: 14px; min-width: 0; overflow: hidden;
+}
+.chart-flex{ display: grid; grid-template-columns: 1fr 1px 1fr; gap: 18px; align-items: center; min-width: 0; }
+.chart-divider{ width: 1px; height: 100%; background: linear-gradient(180deg, #e5e7eb, #cbd5e1); opacity: .95; border-radius: 1px; }
+.chart-left, .chart-right{ min-width: 0; display: flex; align-items: center; justify-content: center; gap: 18px; }
+
+.donut{
+  width: 220px; aspect-ratio: 1 / 1; border-radius: 50%; position: relative;
+  box-shadow: 0 4px 18px rgba(0,0,0,.18) inset, 0 10px 22px rgba(0,0,0,.08);
+}
+.donut--lg{ width: 260px; }
+.donut::after{ content: ""; position: absolute; inset: 24%; border-radius: 50%; background: #0f172a; }
+.donut-inner{ position: absolute; inset: 0; display: grid; place-items: center; pointer-events: none; }
+.donut-num{ font-weight: 800; font-size: 22px; color: #0f172a; }
+.donut-sub{ font-size: 11px; color: #475569; margin-top: -6px; }
+
+.legend{ list-style: none; padding: 0; margin: 0; min-width: 180px; }
+.legend li{ display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 6px 0; border-bottom: 1px dashed #e5e7eb; }
+.legend li:last-child{ border-bottom: 0; }
+.legend .dot{ width: 12px; height: 12px; border-radius: 999px; display: inline-block; }
+.legend .leg-label{ color: #334155; font-size: 13px; }
+.legend .leg-val{ color: #64748b; }
+
+.bars{ display: flex; align-items: flex-end; gap: 14px; min-height: 220px; padding: 8px 6px; }
+.bar-item{ display: flex; flex-direction: column; align-items: center; width: 56px; }
+.bar{
+  width: 100%; background: linear-gradient(180deg,#60a5fa,#2563eb);
+  border-radius: 10px 10px 0 0; box-shadow: 0 10px 24px rgba(37,99,235,.35);
+  position: relative; transition: height .25s ease;
+}
+.bar-val{ position: absolute; top: -22px; left: 50%; transform: translateX(-50%); font-size: 12px; color: #334155; font-weight: 700; }
+.bar-label{ margin-top: 8px; font-size: 12px; color: #64748b; max-width: 100%; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+@media (max-width: 900px){
+  .chart-flex{ grid-template-columns: 1fr; grid-template-rows: auto 1px auto; }
+  .chart-divider{ width: 100%; height: 1px; background: linear-gradient(90deg, #e5e7eb, #cbd5e1); }
+  .donut--lg{ width: 200px; }
+}
+
+/* badge menos “redonda” (mejor en móvil) */
+.badge{ border-radius: 10px; }
+@media (max-width: 640px){ .badge{ border-radius: 8px; } }
+/* ===== Modal refinado (inputs + grilla) ===== */
+.modal-card{ width: min(720px, 92vw); }
+.modal-head h2{ font-size: 26px; font-weight: 800; }
+.modal-grid{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap:12px;
+}
+.field{ display:flex; flex-direction:column; gap:6px; }
+.field label{ font-size:13px; color:#334155; }
+.field input, .field select{
+  height: 38px;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  padding: 8px 10px;
+  background: #fff; color:#0f172a; outline: none;
+}
+.field input:focus, .field select:focus{
+  border-color:#3b82f6; box-shadow: 0 0 0 2px rgba(59,130,246,.12);
+}
+@media (max-width: 560px){
+  .modal-grid{ grid-template-columns: 1fr; }
+  .modal-card{ width: 94vw; }
+}
+
+/* Botones coherentes y compactos en modales */
+.modal-head .btn-sm{ height: 32px; padding: 0 10px; }
+.modal-actions .btn{ height: 36px; padding: 0 14px; }
