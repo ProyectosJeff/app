@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
-import { jwtDecode } from "jwt-decode";
+
 
 // URL del API (Railway) embebida por Vite en build
 export const BASE = (import.meta.env.VITE_API_URL || "http://localhost:4000").replace(/\/$/, "");
@@ -66,6 +66,7 @@ export function AuthProvider({ children }) {
 
   return <AuthCtx.Provider value={value}>{children}</AuthCtx.Provider>;
 }
+
 
 
 
