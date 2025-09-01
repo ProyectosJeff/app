@@ -16,8 +16,8 @@ function parseJwtPayload(token) {
       bin.split("").map(c => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2)).join("")
     );
     return JSON.parse(json);
-  } catch (e) {
-    return null;
+  } catch {
+    return null; // si está corrupto, no crashea la app
   }
 }
 
@@ -87,6 +87,7 @@ export function AuthProvider({ children }) {
 
   return <AuthCtx.Provider value={value}>{children}</AuthCtx.Provider>;
 }
+
 
 
 
