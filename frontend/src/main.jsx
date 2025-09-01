@@ -1,4 +1,6 @@
 import React from "react";
+import "./index.css";
+
 
 export default class ErrorBoundary extends React.Component {
   constructor(props){ super(props); this.state = { error: null, info: null }; }
@@ -25,3 +27,4 @@ export default class ErrorBoundary extends React.Component {
     );
   }
 }
+
