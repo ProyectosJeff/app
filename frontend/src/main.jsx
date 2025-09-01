@@ -1,31 +1,31 @@
 import React from "react";
+import ReactDOM from "react-dom/client";
+import { BrowserRouter } from "react-router-dom";
+import { AuthProvider } from "./context/AuthContext.jsx";
+import ErrorBoundary from "./ErrorBoundary.jsx";
+import App from "./App.jsx";
+
+// 👉 Opción A (CSS en src/):
 import "./index.css";
 
-export default class ErrorBoundary extends React.Component {
-  constructor(props){ super(props); this.state = { error: null, info: null }; }
-  static getDerivedStateFromError(error){ return { error }; }
-  componentDidCatch(error, info){ this.setState({ info }); }
+// 👉 Opción B (CSS en frontend/):
+// import "../index.css";
 
-  render(){
-    if (!this.state.error) return this.props.children;
+// 👉 Opción C (CSS en public/):
+// import "/index.css";
 
-    return (
-      <div style={{
-        padding: 16, margin: 16, borderRadius: 12, background: "#2b2b2b",
-        color: "#fff", fontFamily: "ui-sans-serif, system-ui", lineHeight: 1.4
-      }}>
-        <h2 style={{marginTop:0}}>💥 Se produjo un error en la app</h2>
-        <pre style={{whiteSpace:"pre-wrap"}}>{String(this.state.error?.stack || this.state.error)}</pre>
-        {this.state.info?.componentStack && (
-          <>
-            <h3>Component stack</h3>
-            <pre style={{whiteSpace:"pre-wrap"}}>{this.state.info.componentStack}</pre>
-          </>
-        )}
-      </div>
-    );
-  }
-}
+ReactDOM.createRoot(document.getElementById("root")).render(
+  <React.StrictMode>
+    <ErrorBoundary>
+      <AuthProvider>
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+      </AuthProvider>
+    </ErrorBoundary>
+  </React.StrictMode>
+);
+
 
 
 
