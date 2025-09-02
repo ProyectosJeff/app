@@ -54,13 +54,12 @@ app.use('/api/items', itemsRoutes);
 
 const PORT = Number(process.env.PORT || 4000);
 
+// backend/src/index.js (solo el bloque start())
 async function start() {
   try {
-    // ping de conexión antes de levantar el server
     const [rows] = await pool.query('SELECT 1 AS ok');
     console.log('[DB] Conexión OK:', rows[0].ok);
 
-    // Semilla opcional (ejecuta solo si lo necesitas)
     if (process.env.SEED_ON_BOOT === 'true') {
       await seedUsers();
       console.log('[Seed] Usuarios iniciales verificados/creados');
@@ -71,9 +70,15 @@ async function start() {
     });
   } catch (err) {
     console.error('[DB] Error de conexión:', err.code || err.message);
-    process.exit(1); // aborta si no conecta
+    // Para que no se caiga en bucle mientras ajustas vars:
+    if (process.env.HARD_FAIL_ON_DB === 'true') {
+      process.exit(1);
+    } else {
+      app.listen(PORT, () => {
+        console.log(`[API] escuchando en puerto ${PORT} (DB caída)`);
+      });
+    }
   }
 }
 
-start();
 
