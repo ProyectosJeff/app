@@ -23,6 +23,31 @@ app.get('/api/health', async (_req, res) => {
     res.status(500).json({ ok: false, db: false, code: e.code || e.message });
   }
 });
+app.get('/api/debug/db', async (_req, res) => {
+  try {
+    const { DB_HOST, DB_PORT, DB_USER, DB_NAME } = process.env;
+    const masked = (s) => (s ? s[0] + '***' + s.slice(-1) : '');
+    // ping
+    await pool.query('SELECT 1 AS ok');
+    res.json({
+      ok: true,
+      env: {
+        DB_HOST,
+        DB_PORT,
+        DB_USER: masked(DB_USER),
+        DB_NAME
+      }
+    });
+  } catch (e) {
+    res.status(500).json({
+      ok: false,
+      code: e.code || null,
+      errno: e.errno || null,
+      sqlState: e.sqlState || null,
+      message: e.message
+    });
+  }
+});
 
 app.use('/api/auth', authRoutes);
 app.use('/api/items', itemsRoutes);
