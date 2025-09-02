@@ -10,11 +10,36 @@ import itemsRoutes from './routes/items.routes.js';
 
 const app = express();
 
-const ORIGIN = (process.env.CORS_ORIGIN || '').split(',').map(s => s.trim()).filter(Boolean);
-app.use(cors({ origin: ORIGIN.length ? ORIGIN : true }));
+/* === CORS robusto (lista blanca + preflight) === */
+const allowlist = (process.env.CORS_ORIGIN || '')
+  .split(',')
+  .map(s => s.trim())
+  .filter(Boolean); // p.ej.: ["https://inventarioexistencias.netlify.app","http://localhost:5173"]
+
+const corsOptions = {
+  origin(origin, cb) {
+    // Algunas solicitudes (curl/health, o mismas de servidor) no traen Origin
+    if (!origin) return cb(null, true);
+
+    // Coincidencia exacta o por sufijo (útil si usas subdominios)
+    const ok =
+      allowlist.length === 0 ||
+      allowlist.some(a => origin === a || origin.endsWith(a));
+
+    cb(null, ok);
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: false, // pon true si realmente vas a usar cookies
+};
+
+app.use(cors(corsOptions));
+// Responder preflight para cualquier ruta
+app.options('*', cors(corsOptions));
+
 app.use(express.json());
 
-// Health simple + prueba DB
+// Health + prueba DB
 app.get('/api/health', async (_req, res) => {
   try {
     await pool.query('SELECT 1');
@@ -23,38 +48,12 @@ app.get('/api/health', async (_req, res) => {
     res.status(500).json({ ok: false, db: false, code: e.code || e.message });
   }
 });
-app.get('/api/debug/db', async (_req, res) => {
-  try {
-    const { DB_HOST, DB_PORT, DB_USER, DB_NAME } = process.env;
-    const masked = (s) => (s ? s[0] + '***' + s.slice(-1) : '');
-    // ping
-    await pool.query('SELECT 1 AS ok');
-    res.json({
-      ok: true,
-      env: {
-        DB_HOST,
-        DB_PORT,
-        DB_USER: masked(DB_USER),
-        DB_NAME
-      }
-    });
-  } catch (e) {
-    res.status(500).json({
-      ok: false,
-      code: e.code || null,
-      errno: e.errno || null,
-      sqlState: e.sqlState || null,
-      message: e.message
-    });
-  }
-});
 
 app.use('/api/auth', authRoutes);
 app.use('/api/items', itemsRoutes);
 
 const PORT = Number(process.env.PORT || 4000);
 
-// backend/src/index.js (solo el bloque start())
 async function start() {
   try {
     const [rows] = await pool.query('SELECT 1 AS ok');
@@ -70,15 +69,11 @@ async function start() {
     });
   } catch (err) {
     console.error('[DB] Error de conexión:', err.code || err.message);
-    // Para que no se caiga en bucle mientras ajustas vars:
-    if (process.env.HARD_FAIL_ON_DB === 'true') {
-      process.exit(1);
-    } else {
-      app.listen(PORT, () => {
-        console.log(`[API] escuchando en puerto ${PORT} (DB caída)`);
-      });
-    }
+    process.exit(1);
   }
 }
+
+start();
+
 
 
